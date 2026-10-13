@@ -1,0 +1,37 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { clusterStyles } from '../utils/clusters';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const d = post.data;
+const style = clusterStyles[d.cluster];
+const publishDate = d.publishDate.toLocaleDateString('bg-BG', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<a
+  href={`/blog/${post.id}`}
+  class="group flex flex-col bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-black/5 hover:-translate-y-1"
+>
+  <div class={`relative h-32 flex items-center justify-between px-5 overflow-hidden ${style.bgClass}`}>
+    <span class="inline-flex items-center rounded-full bg-white/15 text-white text-xs font-semibold px-2.5 py-1">
+      {style.label}
+    </span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="absolute -right-3 -bottom-3 h-20 w-20 text-white/10">
+      <path d={style.iconPath} />
+    </svg>
+  </div>
+  <div class="flex flex-col flex-1 px-5 pt-4 pb-5">
+    <h3 class="font-bold text-lg text-text group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+      {d.title}
+    </h3>
+    <p class="text-sm text-muted line-clamp-3 mt-1.5 flex-1">{d.description}</p>
+    <div class="flex items-center justify-between mt-4 pt-3 border-t border-border">
+      <span class="text-xs text-muted">{publishDate}</span>
+      <span class="text-sm font-semibold text-highlight group-hover:text-primary-light transition-colors">Прочети →</span>
+    </div>
+  </div>
+</a>

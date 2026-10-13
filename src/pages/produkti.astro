@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import PaginatedProductGrid from '../components/PaginatedProductGrid.astro';
+import BrandNav from '../components/BrandNav.astro';
+import { products, getProductsByBrand } from '../utils/products';
+
+// Featured slugs — page 1 of each brand on the live site, interleaved
+const featuredSlugs = [
+  'delonghi-primadonna-s',              'saeco-syntia',
+  'delonghi-magnifica-s-ecam-22-110-sb','saeco-intelia-evo',
+  'primadonna-avant-6700',              'saeco-minuto-cappuccino-hd8763',
+  'delonghi-cappuccino-ecam-23-450',    'saeco-granbaristo',
+  'delonghi-intensa-esam-23420',        'saeco-odea-giro',
+  'delonghi-ecam-22-360-b',             'saeco-moltio',
+];
+
+const featuredSet = new Set(featuredSlugs);
+const featured = featuredSlugs.map(slug => products.find(p => p.slug === slug)!).filter(Boolean);
+const rest = products.filter(p => !featuredSet.has(p.slug));
+const allOrdered = [...featured, ...rest];
+const sortedProducts = [
+  ...allOrdered.filter(p => p.inStock),
+  ...allOrdered.filter(p => !p.inStock),
+];
+---
+
+<BaseLayout
+  title="Продукти – Кафе машини втора употреба | Кафемашини"
+  description="Всички кафе машини втора употреба от Швейцария. SAECO, DeLonghi, Jura и Philips. 12 месеца гаранция."
+  bodyClass="!bg-cream"
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-8">
+    <Breadcrumbs items={[{ label: 'Начало', href: '/' }, { label: 'Продукти' }]} />
+    <div class="mb-5 mt-2">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-text mb-2">
+        <span class="block text-xs font-semibold tracking-widest uppercase text-primary/50 mb-2">Каталог</span>
+        Всички продукти
+      </h1>
+      <p class="text-sm text-muted">{sortedProducts.length} продукта</p>
+    </div>
+    <BrandNav />
+    <PaginatedProductGrid products={sortedProducts} />
+  </div>
+</BaseLayout>

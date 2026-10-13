@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import PaginatedProductGrid from '../../components/PaginatedProductGrid.astro';
+import BrandNav from '../../components/BrandNav.astro';
+import { brands, getProductsByBrand } from '../../utils/products';
+
+export function getStaticPaths() {
+  return brands.map(brand => ({
+    params: { brand: brand.slug },
+  }));
+}
+
+const { brand: brandSlug } = Astro.params;
+const brand = brands.find(b => b.slug === brandSlug)!;
+const brandProducts = getProductsByBrand(brandSlug!);
+
+const breadcrumbs = [
+  { label: 'Начало', href: '/' },
+  { label: brand.displayName },
+];
+
+// Per-brand maintenance hub (procedural blog guide). Rendered as a small callout so
+// the hub gets a keyword-bearing inbound link and readers get a genuine care tip.
+// Add brands here as their descale/clean hubs ship.
+const maintenanceHub: Record<string, { href: string; text: string }> = {
+  saeco: {
+    href: '/blog/kak-se-dekalcira-saeco',
+    text: 'Имате Саеко у дома? Вижте как се декалцира кафемашина Саеко',
+  },
+  delonghi: {
+    href: '/blog/delonghi-serviz-chesti-problemi',
+    text: 'Имате Делонги у дома? Вижте честите проблеми при кафемашини DeLonghi и кои се решават сами',
+  },
+};
+const hub = maintenanceHub[brandSlug!];
+---
+
+<BaseLayout
+  title={brand.metaTitle || `Кафе машини ${brand.displayName} – втора употреба | Кафемашини`}
+  description={brand.metaDescription || `Кафе машини ${brand.displayName} втора употреба от Швейцария. ${brandProducts.length} модела на склад. 12 месеца гаранция.`}
+  bodyClass="!bg-cream"
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-8">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="mb-5 mt-2">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-text mb-2">
+        <span class="block text-xs font-semibold tracking-widest uppercase text-primary/50 mb-2">Кафе машини</span>
+        {brand.displayName}
+      </h1>
+      <p class="text-sm text-muted">{brandProducts.length} продукта</p>
+    </div>
+
+    <BrandNav currentBrand={brandSlug} />
+
+    {hub && (
+      <a
+        href={hub.href}
+        class="flex items-center gap-2 mt-4 mb-1 px-4 py-3 rounded-lg bg-card text-primary-dark hover:bg-primary hover:text-white transition-colors text-sm font-medium"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+        {hub.text}
+      </a>
+    )}
+
+    {brandProducts.length > 0 ? (
+      <PaginatedProductGrid products={brandProducts} />
+    ) : (
+      <p class="text-muted text-center py-12">Няма налични продукти от тази марка в момента.</p>
+    )}
+  </div>
+</BaseLayout>

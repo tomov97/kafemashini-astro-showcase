@@ -1,0 +1,38 @@
+---
+import reviews from '../../data/reviews.json';
+
+const googleMapsUrl = 'https://www.google.com/maps/place/%D0%9F%D1%80%D0%BE%D0%B4%D0%B0%D0%B6%D0%B1%D0%B0+%D0%B8+%D1%81%D0%B5%D1%80%D0%B2%D0%B8%D0%B7+%D0%BD%D0%B0+%D0%BA%D0%B0%D1%84%D0%B5+%D0%BC%D0%B0%D1%88%D0%B8%D0%BD%D0%B8+%D0%B2%D1%82%D0%BE%D1%80%D0%B0+%D1%80%D1%8A%D0%BA%D0%B0/@42.7086601,23.3051406,17z/data=!3m1!4b1!4m6!3m5!1s0x40aa85574b94a6cf:0xdcf9df985d5e88bf!8m2!3d42.7086601!4d23.3077155!16s%2Fg%2F11clgpd823?entry=ttu';
+---
+
+<section class="bg-gray-50 py-12 mt-12 -mx-4 sm:-mx-6 px-4 sm:px-6">
+  <div class="max-w-7xl mx-auto">
+    <p class="text-highlight font-medium mb-2 tracking-wide uppercase text-sm text-center">Отзиви от клиенти</p>
+    <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Какво казват клиентите за нас</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {reviews.map(r => (
+        <div class="bg-white rounded-2xl p-6 shadow-sm relative flex flex-col">
+          <svg class="absolute top-5 right-5 w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          <div class="flex gap-1 text-yellow-400 mb-3">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="text-text/80 leading-relaxed mb-4 flex-1">"{r.text}"</p>
+          <div class="flex items-center justify-between text-sm mt-auto">
+            <span class="font-semibold">{r.name}</span>
+            <span class="text-text/40">{r.date}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="text-center mt-8">
+      <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-highlight font-medium hover:underline">
+        Вижте всички отзиви в Google
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>

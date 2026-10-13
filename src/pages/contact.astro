@@ -1,0 +1,259 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ViberIcon from '../components/ViberIcon.astro';
+import WhatsAppIcon from '../components/WhatsAppIcon.astro';
+import { site } from '../utils/products';
+
+const googleMapsUrl = "https://www.google.com/maps/place/%D0%9F%D1%80%D0%BE%D0%B4%D0%B0%D0%B6%D0%B1%D0%B0+%D0%B8+%D1%81%D0%B5%D1%80%D0%B2%D0%B8%D0%B7+%D0%BD%D0%B0+%D0%BA%D0%B0%D1%84%D0%B5+%D0%BC%D0%B0%D1%88%D0%B8%D0%BD%D0%B8+%D0%B2%D1%82%D0%BE%D1%80%D0%B0+%D1%80%D1%8A%D0%BA%D0%B0/@42.7086601,23.3051406,17z/data=!3m1!4b1!4m6!3m5!1s0x40aa85574b94a6cf:0xdcf9df985d5e88bf!8m2!3d42.7086601!4d23.3077155!16s%2Fg%2F11clgpd823?entry=ttu";
+
+const helpCards = [
+  {
+    title: 'Търсите кафемашина?',
+    desc: 'Разгледайте нашия каталог с автоматични кафемашини втора употреба от Швейцария.',
+    href: '/produkti',
+    cta: 'Към продуктите',
+    icon: 'coffee',
+  },
+  {
+    title: 'Нуждаете се от сервиз?',
+    desc: 'Ремонт и профилактика на Saeco, DeLonghi, Jura и Philips — само с нови части.',
+    href: '/serviz-na-kafe-mashini',
+    cta: 'Към сервиза',
+    icon: 'wrench',
+  },
+  {
+    title: 'Въпроси за гаранцията?',
+    desc: '12 месеца гаранция на всяка кафемашина, закупена от нас. Научете повече.',
+    href: '/garantsiya',
+    cta: 'Условия за гаранция',
+    icon: 'shield',
+  },
+];
+---
+
+<BaseLayout
+  title="Контакти — Swiss Coffe | Кафемашини София"
+  description="Свържете се с Swiss Coffe в София. Телефон: 0894 807 755, имейл: office@kafemashini.ch. Адрес: ж.к. Банишора, ул. Сливен 23. Работно време: Пон–Пет, 10:00–17:00."
+  bodyClass="!bg-cream"
+>
+
+  <!-- Section 1: Header -->
+  <section class="bg-cream pt-6 pb-6">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <Breadcrumbs items={[{ label: 'Начало', href: '/' }, { label: 'Контакти' }]} />
+      <div class="mt-2">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight">Контакти</h1>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Address + Map -->
+  <section class="bg-primary pt-10 pb-14">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+
+        <!-- Left: Address details -->
+        <div>
+          <!-- Address details as list -->
+          <div class="space-y-4 mb-8">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="font-semibold text-white">Адрес</p>
+                <p class="text-white/60">{site.address.street}, {site.address.detail}</p>
+                <p class="text-white/60">{site.address.district}, {site.address.city}</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="font-semibold text-white">Работно време</p>
+                <p class="text-white/60">Понеделник – Петък: 10:00 – 17:00</p>
+                <p class="text-white/60">Събота и Неделя: Затворено</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 7V5z" />
+                </svg>
+              </div>
+              <div>
+                <p class="font-semibold text-white">Телефон</p>
+                <a href={`tel:${site.phone}`} class="text-white/80 font-medium hover:text-white">{site.phoneDisplay}</a>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p class="font-semibold text-white">Имейл</p>
+                <a href={`mailto:${site.email}`} class="text-white/80 font-medium hover:text-white">{site.email}</a>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+                <ViberIcon class="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p class="font-semibold text-white">Viber</p>
+                <a href={site.viber} class="text-white/80 font-medium hover:text-white">Пишете ни във Viber</a>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+                <WhatsAppIcon class="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p class="font-semibold text-white">WhatsApp</p>
+                <a href={site.whatsapp} target="_blank" rel="noopener noreferrer" class="text-white/80 font-medium hover:text-white">Пишете ни в WhatsApp</a>
+              </div>
+            </div>
+          </div>
+
+          <a
+            href={googleMapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 text-white/80 font-semibold hover:text-white"
+          >
+            Отворете в Google Maps
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
+
+        <!-- Right: Google Maps embed -->
+        <div>
+          <div class="rounded-2xl overflow-hidden border border-border shadow-lg relative" style="height: 420px;">
+            <!-- Skeleton loader -->
+            <div id="map-skeleton" class="absolute inset-0 bg-white/10 animate-pulse flex flex-col gap-3 p-6" aria-hidden="true">
+              <div class="h-full rounded-xl bg-white/15"></div>
+            </div>
+            <iframe
+              id="map-iframe"
+              src="https://maps.google.com/maps?q=ул.+Сливен+23,+ж.к.+Банишора,+София,+България&output=embed&hl=bg&z=16"
+              width="100%"
+              height="100%"
+              style="border: 0; opacity: 0; transition: opacity 0.3s ease;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Местоположение на Swiss Coffe — ул. Сливен 23, ж.к. Банишора, София"
+              onload="this.style.opacity='1'; document.getElementById('map-skeleton').style.display='none';"
+            ></iframe>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: How Can We Help -->
+  <section class="bg-cream py-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <p class="text-highlight font-medium mb-2 tracking-wide uppercase text-sm text-center">Полезни страници</p>
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Как можем да помогнем?</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {helpCards.map(card => (
+          <a href={card.href} class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+            <div class="bg-primary px-5 py-4 flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+                {card.icon === 'coffee' && (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-6 h-6" fill="none">
+                    <rect x="6" y="10" width="28" height="26" rx="4" fill="#284d47" stroke="white" stroke-width="2"/>
+                    <rect x="6" y="10" width="28" height="9" rx="4" fill="#1f3d38" stroke="white" stroke-width="2"/>
+                    <rect x="14" y="13" width="12" height="3" rx="1" fill="#589e94"/>
+                    <rect x="8" y="14" width="2" height="2" rx="0.5" fill="white" opacity="0.7"/>
+                    <rect x="11" y="14" width="2" height="2" rx="0.5" fill="white" opacity="0.7"/>
+                    <rect x="28" y="14" width="2" height="2" rx="0.5" fill="white" opacity="0.7"/>
+                    <rect x="31" y="14" width="2" height="2" rx="0.5" fill="white" opacity="0.7"/>
+                    <rect x="17" y="19" width="6" height="5" rx="1" fill="#589e94" stroke="white" stroke-width="1.5"/>
+                    <rect x="19" y="24" width="1.5" height="3" rx="0.5" fill="white"/>
+                    <rect x="21.5" y="24" width="1.5" height="3" rx="0.5" fill="white"/>
+                    <rect x="8" y="34" width="24" height="3" rx="2" fill="#589e94" stroke="white" stroke-width="1.5"/>
+                    <path d="M16 28 Q16 33 20 33 Q24 33 24 28 Z" fill="white" stroke="white" stroke-width="1"/>
+                    <path d="M24 29 Q26 29 26 31 Q26 33 24 33" fill="none" stroke="white" stroke-width="1.2"/>
+                    <rect x="34" y="16" width="5" height="16" rx="2.5" fill="#284d47" stroke="white" stroke-width="1.5"/>
+                  </svg>
+                )}
+                {card.icon === 'wrench' && (
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
+                  </svg>
+                )}
+                {card.icon === 'shield' && (
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                )}
+              </div>
+              <h3 class="text-base font-bold text-white">{card.title}</h3>
+            </div>
+            <div class="px-5 py-4 flex flex-col flex-1">
+              <p class="text-text/60 leading-relaxed mb-4 flex-1 text-sm">{card.desc}</p>
+              <span class="inline-flex items-center gap-1 text-highlight font-semibold text-sm">
+                {card.cta}
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Schema: LocalBusiness + ContactPage -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Swiss Coffe",
+    "description": "Продажба и сервиз на автоматични кафемашини втора употреба от Швейцария в София. 18+ години опит.",
+    "url": "https://kafemashini.ch/contact",
+    "telephone": "+359 894 807 755",
+    "email": "office@kafemashini.ch",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Сливен 23, Магазин 3",
+      "addressLocality": "София",
+      "addressRegion": "ж.к. Банишора",
+      "addressCountry": "BG"
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "10:00",
+      "closes": "17:00"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 42.7086601,
+      "longitude": 23.3077155
+    },
+    "sameAs": [googleMapsUrl]
+  })} />
+
+</BaseLayout>

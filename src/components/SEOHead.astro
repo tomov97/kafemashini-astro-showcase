@@ -1,0 +1,33 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: string;
+  noindex?: boolean;
+}
+
+const { title, description = '', canonical, ogImage, ogType = 'website', noindex = false } = Astro.props;
+const rawCanonical = canonical || new URL(Astro.url.pathname, Astro.site).href;
+// Strip .html from canonical: /index.html → /, /any-page.html → /any-page
+// Cloudflare Pages serves .html files at extensionless URLs, and we redirect .html → extensionless.
+const canonicalUrl = rawCanonical
+  .replace(/\/index\.html$/, '/')
+  .replace(/\.html$/, '');
+const siteUrl = (Astro.site?.href || 'https://kafemashini.ch').replace(/\/$/, '');
+---
+
+<title>{title}</title>
+{description && <meta name="description" content={description} />}
+<link rel="canonical" href={canonicalUrl} />
+{noindex && <meta name="robots" content="noindex,nofollow" />}
+
+<!-- Open Graph -->
+<meta property="og:title" content={title} />
+{description && <meta property="og:description" content={description} />}
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:type" content={ogType} />
+<meta property="og:locale" content="bg_BG" />
+<meta property="og:site_name" content="Кафемашини" />
+{ogImage && <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`} />}

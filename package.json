@@ -1,0 +1,33 @@
+{
+  "name": "kafemashini-ch",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "kafemashini.ch — Coffee machine catalog, migrated from WordPress to Astro",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "scrape": "node tools/scrape-products.mjs && node tools/scrape-categories.mjs && node tools/scrape-info-pages.mjs",
+    "download-images": "node tools/download-images.mjs",
+    "validate": "node tools/validate-data.mjs",
+    "verify-urls": "node tools/verify-urls.mjs",
+    "optimize-images": "node tools/optimize-images.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.1",
+    "@tailwindcss/vite": "^4.2.1",
+    "astro": "^6.0.4",
+    "cheerio": "^1.2.0",
+    "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@tailwindcss/typography": "^0.5.20",
+    "puppeteer-core": "^24.39.1",
+    "sharp": "^0.34.5"
+  }
+}

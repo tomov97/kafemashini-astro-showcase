@@ -1,0 +1,109 @@
+# Cloudflare Pages _redirects
+# Constraints: free plan limit is 100 dynamic (3xx) rules total.
+# HTTPS upgrade is handled automatically by Cloudflare's edge.
+# www -> non-www must be configured via Cloudflare Page Rule or Bulk Redirect List
+# (absolute-URL sources are not supported here on free plan).
+
+# --- Static cleanup ---
+/cookie-policy   /biskvitki  301
+/wp-admin/*      /           302
+/wp-login.php    /           302
+/moyat-profil    /           301
+/cart            /           301
+/checkout        /           301
+
+# --- Info pages: explicit 301 to extensionless (replaces Cloudflare's implicit 307) ---
+/contact.html                  /contact                  301
+/about.html                    /about                    301
+/serviz-na-kafe-mashini.html   /serviz-na-kafe-mashini   301
+/garantsiya.html               /garantsiya               301
+/produkti.html                 /produkti                 301
+/kafe_mashini.html             /produkti                 301
+/istoria_na_kafe_mashinite.html  /                       301
+
+# --- Legacy WordPress brand URLs (pre-migration, high historical traffic) ---
+/kafe-mashini-saeko.html      /kafe-mashini/saeco     301
+/kafe-mashini-delonghi.html   /kafe-mashini/delonghi  301
+/kafe-mashini-bosh.html       /produkti               301
+/kafe-mashini-koenig.html     /produkti               301
+/kafe-mashini-rotel.html      /produkti               301
+/kafe-mashini-satrap.html     /produkti               301
+/kafe-mashini-simens.html     /produkti               301
+/kafe-mashini-solis.html      /produkti               301
+/kafe-mashini-turmiks.html    /produkti               301
+/kafe-mashini-krups.html      /produkti               301
+/kafe-mashini-gaggia.html     /produkti               301
+/kafe-mashini-drugi.html      /produkti               301
+
+# --- Removed brand category pages -> products page ---
+/kafe-mashini/bosch                /produkti  301
+/kafe-mashini/gaggia               /produkti  301
+/kafe-mashini/koenig               /produkti  301
+/kafe-mashini/krups                /produkti  301
+/kafe-mashini/rotel                /produkti  301
+/kafe-mashini/satrap               /produkti  301
+/kafe-mashini/siemens              /produkti  301
+/kafe-mashini/solis                /produkti  301
+/kafe-mashini/turmix               /produkti  301
+/kafe-mashini/drugi-kafe-mashini   /produkti  301
+
+# --- Live brand category .html duplicates -> extensionless ---
+/kafe-mashini/saeco.html    /kafe-mashini/saeco    301
+/kafe-mashini/delonghi.html /kafe-mashini/delonghi 301
+/kafe-mashini/jura.html     /kafe-mashini/jura     301
+/kafe-mashini/philips.html  /kafe-mashini/philips  301
+
+# --- Removed product pages (slugs that no longer exist) -> products page ---
+# Specific rules first so they win over the wildcards below.
+/produkt/gaggia-platinum-swing-up       /produkti  301
+/produkt/rotel-conforta-digital         /produkti  301
+/produkt/rotel-conforta                 /produkti  301
+/produkt/fust-primotecq                 /produkti  301
+/produkt/krups-xp-7240                  /produkti  301
+/produkt/turmix-tx-550                  /produkti  301
+/produkt/koenig-arte-2000               /produkti  301
+/produkt/turmix-tx-650                  /produkti  301
+/produkt/caggia-accademia               /produkti  301
+/produkt/turmix-just-touch              /produkti  301
+/produkt/siemens-surpresso-s40          /produkti  301
+/produkt/siemens-surpresso-compact      /produkti  301
+/produkt/satrap-excelento               /produkti  301
+/produkt/gaggia-titanium                /produkti  301
+/produkt/satrap-va-70                   /produkti  301
+/produkt/solis-palazzo                  /produkti  301
+/produkt/produkt-bosch-benvenuto-b30    /produkti  301
+/produkt/gaggia-brera                   /produkti  301
+/produkt/gaggia-platinum                /produkti  301
+/produkt/saeco-idea                     /produkti  301
+/produkt/saeco-primea-cappuccino-touch  /produkti  301
+/produkt/saeco-primea-ring-plus         /produkti  301
+/produkt/saeco-magic                    /produkti  301
+/produkt/saeco-incanto-sirius           /produkti  301
+/produkt/saeco-incanto-s-class-classic  /produkti  301
+/produkt/saeco-incanto-digital          /produkti  301
+/produkt/saeco-incanto-classic          /produkti  301
+/produkt/saeco-talea-giro               /produkti  301
+/produkt/saeco-talea-touch-plus         /produkti  301
+/produkt/saeco-talea-touch              /produkti  301
+/produkt/saeco-talea-ring               /produkti  301
+
+# --- WordPress legacy paths via wildcards ---
+# /produkt/<slug>.html -> /produkt/<slug> (covers all 36 product .html duplicates)
+/produkt/*.html          /produkt/:splat   301
+
+# /blog/<slug>.html -> /blog/<slug> (canonical is extensionless)
+/blog/*.html             /blog/:splat      301
+
+# WP image-attachment URLs and feeds (more specific, must come before /produkti/* below)
+/produkt/*/feed          /produkt/:splat   301
+/produkti/*/feed         /produkti         301
+/kafe-mashini/:brand/page/*   /kafe-mashini/:brand   301
+/wp-content/uploads/*    /produkti         301
+/cpo_slide/*             /                 301
+/primerna-stranitsa/*    /                 301
+/produkt/:slug/*         /produkti         301
+/produkti/:slug/*        /produkti         301
+
+# Old /produkti/<slug> path: redirect to /produkt/<slug>. Live slugs land on a real page;
+# dead slugs hit the explicit /produkt/<dead-slug> -> /produkti rules above (single 301 chain).
+/produkti/*              /produkt/:splat   301

@@ -1,0 +1,45 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# MCP config — machine-local; historically held API credentials. Keep out of git.
+.mcp.json
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# SEO campaign raw exports (screenshots, CSV dumps) — distilled findings live in seo/*.md
+seo/_raw/*
+!seo/_raw/README.md
+
+# Raw GSC / inventory dumps at repo root (diagnostic inputs, not source)
+/*.csv
+/GSC/
+/page-sitemap.xml
+/product-sitemap.xml
+/product_cat-sitemap.xml
+
+# Playwright MCP working cache
+.playwright-mcp/
+
+# Python bytecode cache
+__pycache__/
+*.pyc

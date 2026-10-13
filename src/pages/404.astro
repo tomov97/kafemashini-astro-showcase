@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../utils/products';
+---
+
+<BaseLayout title="Страницата не е намерена | Кафемашини" noindex={true}>
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 py-24 text-center">
+    <p class="text-6xl font-bold text-primary mb-4">404</p>
+    <h1 class="text-3xl font-bold mb-4">Страницата не е намерена</h1>
+    <p class="text-muted mb-8">Страницата, която търсите, не съществува или е преместена.</p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="/" class="inline-flex items-center bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-primary-light transition-colors">
+        Начална страница
+      </a>
+      <a href="/produkti" class="inline-flex items-center border-2 border-primary text-primary px-6 py-3 rounded-full font-medium hover:bg-primary hover:text-white transition-colors">
+        Всички продукти
+      </a>
+    </div>
+  </div>
+</BaseLayout>

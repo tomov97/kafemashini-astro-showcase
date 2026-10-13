@@ -1,0 +1,104 @@
+---
+/**
+ * Displays key spec highlights as icon+label pairs above the fold.
+ * Shows Tier 1 specs that differentiate machines: milk system, dimensions,
+ * water tank, bean hopper, pre-ground coffee option.
+ */
+import type { MilkSystem } from '../utils/products';
+
+interface Props {
+  specs: Record<string, string>;
+  milkSystem?: MilkSystem;
+}
+
+const { specs, milkSystem } = Astro.props;
+
+const milkSystemLabels: Record<string, string> = {
+  auto: 'Автоматичен капучинатор',
+  panarello: 'Панарело (ръчно)',
+  none: 'Без система за мляко',
+};
+
+type Highlight = { icon: string; label: string; value: string };
+const highlights: Highlight[] = [];
+
+// Milk system
+if (milkSystem) {
+  highlights.push({
+    icon: 'milk',
+    label: 'Система за мляко',
+    value: milkSystemLabels[milkSystem] || milkSystem,
+  });
+}
+
+// Dimensions
+const dims = specs['Размери (ШxДxВ)'] || specs['Размери'];
+if (dims) {
+  highlights.push({
+    icon: 'dimensions',
+    label: 'Размери',
+    value: dims,
+  });
+}
+
+// Water tank
+const waterTank = specs['Воден резервоар'];
+if (waterTank) {
+  highlights.push({
+    icon: 'water',
+    label: 'Воден резервоар',
+    value: waterTank,
+  });
+}
+
+// Bean hopper
+const beanHopper = specs['Контейнер за кафе'] || specs['Кафе на зърна'];
+if (beanHopper) {
+  highlights.push({
+    icon: 'beans',
+    label: 'Контейнер за кафе',
+    value: beanHopper,
+  });
+}
+
+
+---
+
+{highlights.length > 0 && (
+  <div class="grid grid-cols-2 gap-2.5 mb-4">
+    {highlights.map((h) => (
+      <div class="flex items-start gap-2.5 p-2.5 rounded-xl bg-primary/5">
+        <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+          {h.icon === 'milk' && (
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 2h8l2 8H6z" />
+              <path d="M6 10v10a2 2 0 002 2h8a2 2 0 002-2V10" />
+              <path d="M12 10v6" />
+            </svg>
+          )}
+          {h.icon === 'dimensions' && (
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M3 12h4m10 0h4M12 3v4m0 10v4" />
+            </svg>
+          )}
+          {h.icon === 'water' && (
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
+            </svg>
+          )}
+          {h.icon === 'beans' && (
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24">
+              <ellipse cx="12" cy="12" rx="6" ry="9.5" fill="currentColor" transform="rotate(35 12 12)" />
+              <path d="M9.5 5.5 C13 8.5 11 15.5 14.5 18.5" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          )}
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-muted leading-tight">{h.label}</p>
+          <p class="text-sm font-medium text-primary leading-tight truncate">{h.value}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+)}

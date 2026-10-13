@@ -1,0 +1,764 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { site, brands, products, getProductsByBrand } from '../utils/products';
+import { eurToBgn } from '../utils/currency';
+
+const featured = products.filter(p => p.inStock && p.price).slice(0, 8);
+// build.format:'file' makes Astro.url.pathname return '/index' for the homepage, not '/'.
+// Since this file IS the homepage, we hardcode '/' as the current path.
+const currentPath = '/';
+
+// Brand tabs for the products section pill bar
+const brandTabs = [
+  { slug: 'delonghi', label: 'DeLonghi' },
+  { slug: 'saeco',    label: 'Saeco'    },
+  { slug: 'philips',  label: 'Philips'  },
+  { slug: 'jura',     label: 'Jura'     },
+];
+
+// Pre-compute top 6 products per brand for client-side switching
+const brandProductsMap: Record<string, { slug: string; name: string; brandDisplayName: string; price: number | null; priceEur: number | null; images: { src: string; alt: string; isMain: boolean }[] }[]> = {};
+for (const tab of brandTabs) {
+  const all = [...getProductsByBrand(tab.slug)].sort((a, b) => (b.inStock ? 1 : 0) - (a.inStock ? 1 : 0));
+  brandProductsMap[tab.slug] = all.slice(0, 6).map(p => ({
+    slug: p.slug,
+    name: p.name,
+    brandDisplayName: p.brandDisplayName,
+    price: p.price,
+    priceEur: p.priceEur,
+    inStock: p.inStock,
+    images: p.images.map(img => ({ src: img.src, alt: img.alt || '', isMain: img.isMain })),
+  }));
+}
+const defaultBrand = 'delonghi';
+const defaultProducts = brandProductsMap[defaultBrand] ?? [];
+---
+
+<BaseLayout
+  title="Кафемашини – втора употреба от Швейцария | Swiss Coffe"
+  description="Автоматични кафе машини втора употреба от Швейцария. Марки SAECO, DeLonghi, Jura и Philips. 12 месеца гаранция. Доставка в цялата страна."
+  ogType="website"
+>
+  <!-- Hero — contained card layout -->
+  <section class="bg-cream pt-14 sm:pt-8 pb-8 sm:pb-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="hero-card-container">
+        <!-- Text side -->
+        <div class="hero-text-side gsap-fade-up">
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight text-center sm:text-left">
+            <span class="text-highlight">Продажба и сервиз на кафе машини</span>
+          </h1>
+          <p class="text-text/70 text-sm sm:text-base lg:text-lg mb-6 sm:mb-8 leading-relaxed max-w-md text-center sm:text-left mx-auto sm:mx-0">
+            Продажба на напълно обслужени кафе машини от Швейцария и професионален ремонт и поддръжка в България.
+          </p>
+          <div class="flex gap-3 justify-center sm:justify-start">
+            <a href="/produkti" class="hero-btn hero-btn-primary inline-flex items-center px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base whitespace-nowrap text-white">
+              Кафе Машини
+            </a>
+            <a href="/serviz-na-kafe-mashini" class="hero-btn hero-btn-secondary inline-flex items-center px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base whitespace-nowrap text-white">
+              Нашият Сервиз
+            </a>
+          </div>
+        </div>
+        <!-- Image side -->
+        <div class="hero-image-side gsap-fade-up" style="--delay: 0.15s">
+          <img
+            src="/images/hero-header-opt.webp"
+            alt="Автоматична кафе машина в модерна кухня"
+            class="w-full h-full object-cover"
+            style="object-position: 40% 70%"
+            fetchpriority="high"
+            loading="eager"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Badges + Services — green section below hero -->
+  <section class="bg-primary pt-6 pb-10 gsap-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="max-w-5xl mx-auto">
+
+        <!-- Trust Badges — compact shield strip -->
+        <div class="flex justify-center items-start gap-10 sm:gap-14 md:gap-20 pb-2 gsap-fade-up">
+
+          <!-- Badge 1: Experience -->
+          <div class="trust-badge-wrap">
+            <svg class="trust-badge-svg" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <clipPath id="shield1">
+                  <path d="M8,0 H112 Q120,0 120,8 V80 Q120,110 60,140 Q0,110 0,80 V8 Q0,0 8,0 Z"/>
+                </clipPath>
+              </defs>
+              <!-- Cream ring -->
+              <path d="M8,0 H112 Q120,0 120,8 V80 Q120,110 60,140 Q0,110 0,80 V8 Q0,0 8,0 Z" fill="#fefbf0"/>
+              <!-- Green fill (inset 3px) -->
+              <path d="M11,3 H109 Q117,3 117,11 V80 Q117,107 60,136 Q3,107 3,80 V11 Q3,3 11,3 Z" fill="url(#grad1)"/>
+              <!-- Inner ring line -->
+              <path d="M16,8 H104 Q112,8 112,16 V80 Q112,104 60,130 Q8,104 8,80 V16 Q8,8 16,8 Z" fill="none" stroke="rgba(254,251,240,0.2)" stroke-width="1"/>
+              <defs>
+                <radialGradient id="grad1" cx="50%" cy="25%" r="70%">
+                  <stop offset="0%" stop-color="#3d7a70"/>
+                  <stop offset="100%" stop-color="#284d47"/>
+                </radialGradient>
+              </defs>
+            </svg>
+            <div class="trust-badge-content">
+              <span class="trust-badge-stat">над 18</span>
+              <span class="trust-badge-label">години опит</span>
+              <span class="trust-badge-sub">в България</span>
+            </div>
+          </div>
+
+          <!-- Badge 2: Clients -->
+          <div class="trust-badge-wrap">
+            <svg class="trust-badge-svg" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8,0 H112 Q120,0 120,8 V80 Q120,110 60,140 Q0,110 0,80 V8 Q0,0 8,0 Z" fill="#fefbf0"/>
+              <path d="M11,3 H109 Q117,3 117,11 V80 Q117,107 60,136 Q3,107 3,80 V11 Q3,3 11,3 Z" fill="url(#grad2)"/>
+              <path d="M16,8 H104 Q112,8 112,16 V80 Q112,104 60,130 Q8,104 8,80 V16 Q8,8 16,8 Z" fill="none" stroke="rgba(254,251,240,0.2)" stroke-width="1"/>
+              <defs>
+                <radialGradient id="grad2" cx="50%" cy="25%" r="70%">
+                  <stop offset="0%" stop-color="#3d7a70"/>
+                  <stop offset="100%" stop-color="#284d47"/>
+                </radialGradient>
+              </defs>
+            </svg>
+            <div class="trust-badge-content">
+              <span class="trust-badge-stat">15 000+</span>
+              <span class="trust-badge-label">клиенти</span>
+              <span class="trust-badge-sub">доволни клиенти</span>
+            </div>
+          </div>
+
+          <!-- Badge 3: Warranty -->
+          <div class="trust-badge-wrap">
+            <svg class="trust-badge-svg" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8,0 H112 Q120,0 120,8 V80 Q120,110 60,140 Q0,110 0,80 V8 Q0,0 8,0 Z" fill="#fefbf0"/>
+              <path d="M11,3 H109 Q117,3 117,11 V80 Q117,107 60,136 Q3,107 3,80 V11 Q3,3 11,3 Z" fill="url(#grad3)"/>
+              <path d="M16,8 H104 Q112,8 112,16 V80 Q112,104 60,130 Q8,104 8,80 V16 Q8,8 16,8 Z" fill="none" stroke="rgba(254,251,240,0.2)" stroke-width="1"/>
+              <defs>
+                <radialGradient id="grad3" cx="50%" cy="25%" r="70%">
+                  <stop offset="0%" stop-color="#3d7a70"/>
+                  <stop offset="100%" stop-color="#284d47"/>
+                </radialGradient>
+              </defs>
+            </svg>
+            <div class="trust-badge-content">
+              <span class="trust-badge-stat">12</span>
+              <span class="trust-badge-label">месеца гаранция</span>
+              <span class="trust-badge-sub">на всяка машина</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Our Services -->
+        <h2 class="text-lg sm:text-xl font-semibold text-white text-center mt-8 sm:mt-10 mb-4 sm:mb-6 gsap-fade-up">Нашите услуги</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
+
+          <!-- Card: Coffee Machines -->
+          <div class="gsap-fade-up h-full">
+            <div class="svc-card svc-card-green h-full">
+              <div class="svc-content">
+                <h3 class="text-sm sm:text-lg font-bold text-text mb-0.5">Кафе машини</h3>
+                <p class="text-text/70 text-xs sm:text-sm leading-snug sm:leading-relaxed mb-2 sm:mb-4">Напълно обслужени автоматични кафе машини от Швейцария с гаранция.</p>
+                <ul class="space-y-0.5 sm:space-y-1.5">
+                  <li class="flex items-center gap-1.5 sm:gap-2">
+                    <svg class="h-3 w-3 sm:h-4 sm:w-4 text-btn flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    <span class="text-text/80 text-xs sm:text-sm">12 месеца гаранция</span>
+                  </li>
+                  <li class="flex items-center gap-1.5 sm:gap-2">
+                    <svg class="h-3 w-3 sm:h-4 sm:w-4 text-btn flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    <span class="text-text/80 text-xs sm:text-sm">Обслужени преди продажба</span>
+                  </li>
+                  <li class="flex items-center gap-1.5 sm:gap-2">
+                    <svg class="h-3 w-3 sm:h-4 sm:w-4 text-btn flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    <span class="text-text/80 text-xs sm:text-sm">Подбрани модели за дом и офис</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="flex flex-col items-center justify-between flex-shrink-0 self-stretch">
+                <div class="svc-icon-badge svc-icon-badge-green">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-7 h-7 sm:w-10 sm:h-10" fill="none">
+                    <rect x="6" y="10" width="28" height="26" rx="4" fill="#284d47" stroke="white" stroke-width="2"/>
+                    <rect x="6" y="10" width="28" height="9" rx="4" fill="#1f3d38" stroke="white" stroke-width="2"/>
+                    <rect x="14" y="13" width="12" height="3" rx="1" fill="#589e94"/>
+                    <rect x="8" y="14" width="2" height="2" rx="0.5" fill="white" opacity="0.7"/>
+                    <rect x="11" y="14" width="2" height="2" rx="0.5" fill="white" opacity="0.7"/>
+                    <rect x="28" y="14" width="2" height="2" rx="0.5" fill="white" opacity="0.7"/>
+                    <rect x="31" y="14" width="2" height="2" rx="0.5" fill="white" opacity="0.7"/>
+                    <rect x="17" y="19" width="6" height="5" rx="1" fill="#589e94" stroke="white" stroke-width="1.5"/>
+                    <rect x="19" y="24" width="1.5" height="3" rx="0.5" fill="white"/>
+                    <rect x="21.5" y="24" width="1.5" height="3" rx="0.5" fill="white"/>
+                    <rect x="8" y="34" width="24" height="3" rx="2" fill="#589e94" stroke="white" stroke-width="1.5"/>
+                    <path d="M16 28 Q16 33 20 33 Q24 33 24 28 Z" fill="white" stroke="white" stroke-width="1"/>
+                    <path d="M24 29 Q26 29 26 31 Q26 33 24 33" fill="none" stroke="white" stroke-width="1.2"/>
+                    <rect x="34" y="16" width="5" height="16" rx="2.5" fill="#284d47" stroke="white" stroke-width="1.5"/>
+                  </svg>
+                </div>
+                <a href="/produkti" class="svc-cta-green inline-flex items-center px-5 py-2 sm:px-6 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition-all">
+                  Машини
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Service -->
+          <div class="gsap-fade-up h-full" style="--delay: 0.1s">
+            <div class="svc-card svc-card-warm h-full">
+              <div class="svc-content">
+                <h3 class="text-sm sm:text-lg font-bold text-text mb-0.5">Сервиз</h3>
+                <p class="text-text/70 text-xs sm:text-sm leading-snug sm:leading-relaxed mb-2 sm:mb-4">Професионален ремонт и поддръжка на кафе машини с нови части и доказан опит.</p>
+                <ul class="space-y-0.5 sm:space-y-1.5">
+                  <li class="flex items-center gap-1.5 sm:gap-2">
+                    <svg class="h-3 w-3 sm:h-4 sm:w-4 text-amber-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    <span class="text-text/80 text-xs sm:text-sm">Само нови части</span>
+                  </li>
+                  <li class="flex items-center gap-1.5 sm:gap-2">
+                    <svg class="h-3 w-3 sm:h-4 sm:w-4 text-amber-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    <span class="text-text/80 text-xs sm:text-sm">Диагностика и ремонт</span>
+                  </li>
+                  <li class="flex items-center gap-1.5 sm:gap-2">
+                    <svg class="h-3 w-3 sm:h-4 sm:w-4 text-amber-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    <span class="text-text/80 text-xs sm:text-sm">Сервиз на водещи марки</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="flex flex-col items-center justify-between flex-shrink-0 self-stretch">
+                <div class="svc-icon-badge svc-icon-badge-warm">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 sm:w-10 sm:h-10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
+                  </svg>
+                </div>
+                <a href="/serviz-na-kafe-mashini" class="svc-cta-green inline-flex items-center px-5 py-2 sm:px-6 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition-all">
+                  Сервиз
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section class="bg-cream py-16 gsap-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+
+      <!-- Heading -->
+      <div class="text-center mb-5 gsap-fade-up">
+        <h2 class="text-3xl md:text-4xl font-bold">Нашите Кафе Машини</h2>
+      </div>
+
+      <!-- Brand pill bar -->
+      <div class="flex justify-center mb-10 gsap-fade-up px-2">
+        <div class="nav-pill-container bg-white rounded-full px-1 py-1.5 flex gap-0 sm:px-3 sm:py-2 sm:gap-1">
+          {brandTabs.map((tab, i) => (
+            <button
+              data-brand={tab.slug}
+              class={`brand-pill${i === 0 ? ' nav-pill-active' : ' nav-pill-hover'}`}
+            >
+              {tab.label}
+            </button>
+          ))}
+          <a href="/produkti" class="brand-pill nav-pill-hover">Всички</a>
+        </div>
+      </div>
+
+      <!-- Product grid (SSR default + client-side switching) -->
+      <div id="brand-products" class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 max-w-5xl mx-auto">
+        {defaultProducts.map((product, i) => {
+          const img = product.images.find(img => img.isMain) || product.images[0];
+          return (
+            <a
+              href={`/produkt/${product.slug}`}
+              class="group flex flex-col bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-black/5 hover:-translate-y-1 gsap-fade-up"
+              style={`--delay: ${i * 0.05}s`}
+            >
+              <div class="relative aspect-square overflow-hidden rounded-2xl sm:rounded-3xl m-0.5 sm:m-1 bg-gradient-to-br from-[#2a2a2a] to-[#4a5568]">
+                {img ? (
+                  <img
+                    src={img.src}
+                    alt={img.alt || `${product.name} кафе машина`}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center text-white/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div class="flex flex-col flex-1 px-2 pt-1.5 pb-2 sm:px-4 sm:pt-3 sm:pb-4">
+                <h3 class="font-semibold text-xs sm:text-base text-text group-hover:text-primary transition-colors line-clamp-2 leading-tight mb-0 sm:mb-0.5">{product.name.replace(new RegExp('^' + product.brandDisplayName + '\\s*', 'i'), '')}</h3>
+                <p class="text-[10px] sm:text-sm text-muted mb-1.5 sm:mb-2">{product.brandDisplayName}</p>
+                <div class="mt-auto">
+                  <div class="flex items-center justify-between mb-1.5 sm:mb-2">
+                    {product.priceEur ? (
+                      <p class="text-xs sm:text-sm text-text"><span class="font-bold">€{product.priceEur.toFixed(2)}</span> <span class="text-muted font-normal">/ {eurToBgn(product.priceEur).toFixed(2)} лв.</span></p>
+                    ) : (
+                      <p class="text-[10px] sm:text-sm text-muted italic">По запитване</p>
+                    )}
+                    <span class={`text-[10px] sm:text-sm font-semibold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full ${product.inStock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                      {product.inStock ? 'Налична' : 'Неналична'}
+                    </span>
+                  </div>
+                  <span class="block bg-primary text-white text-[10px] sm:text-xs font-semibold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full group-hover:bg-btn transition-colors duration-200 text-center">Разгледай</span>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+
+      <!-- CTA -->
+      <div class="text-center mt-6 sm:mt-10 gsap-fade-up">
+        <a id="brand-cta" href="/kafe-mashini/delonghi" class="hero-btn hero-btn-primary inline-flex items-center text-white px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-medium text-sm sm:text-base">
+          <span id="brand-cta-text">Всички машини DeLonghi</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Google Reviews / Social Proof -->
+  <section class="bg-primary py-8 sm:py-12 gsap-section">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <h2 class="text-lg sm:text-xl font-semibold text-white/90 text-center mb-5 sm:mb-8 gsap-fade-up">Отзиви от клиенти</h2>
+      <!-- Review cards — translucent on dark -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-4 gsap-fade-up">
+        {[
+          { name: 'Мария П.', text: 'Изключително коректно, надеждно и бързо обслужване! Отлична препоръка за професионално мнение и сервиз!', date: 'март 2026' },
+          { name: 'Йордан Й.', text: 'Качествени и бързи услуги. Предлага страхотни проверени кафе машини. Горещо препоръчвам сервиза', date: 'февруари 2026' },
+          { name: 'Лозан К.', text: 'Най-добрия сервиз на който съм попадал. Силно препоръчвам!', date: 'февруари 2026' },
+        ].map(r => (
+          <div class="bg-white/12 rounded-xl px-4 py-3 sm:px-5 sm:py-4 border border-white/15 relative flex flex-col">
+            <!-- Google icon -->
+            <svg class="absolute top-3 right-3 sm:top-4 sm:right-4 w-4 h-4 opacity-60" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            <div class="flex gap-0.5 text-[#c8b88a] text-xs mb-2">★★★★★</div>
+            <p class="text-white/90 text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3 flex-1">"{r.text}"</p>
+            <div class="flex items-center justify-between text-xs mt-auto">
+              <span class="font-medium text-white/85">{r.name}</span>
+              <span class="text-white/40">{r.date}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="text-center mt-4 sm:mt-6 gsap-fade-up">
+        <a href="https://www.google.com/maps/place/%D0%9F%D1%80%D0%BE%D0%B4%D0%B0%D0%B6%D0%B1%D0%B0+%D0%B8+%D1%81%D0%B5%D1%80%D0%B2%D0%B8%D0%B7+%D0%BD%D0%B0+%D0%BA%D0%B0%D1%84%D0%B5+%D0%BC%D0%B0%D1%88%D0%B8%D0%BD%D0%B8+%D0%B2%D1%82%D0%BE%D1%80%D0%B0+%D1%80%D1%8A%D0%BA%D0%B0/@42.7086601,23.3051406,17z/data=!3m1!4b1!4m6!3m5!1s0x40aa85574b94a6cf:0xdcf9df985d5e88bf!8m2!3d42.7086601!4d23.3077155!16s%2Fg%2F11clgpd823?entry=ttu&g_ep=EgoyMDI2MDMxMS4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-white/40 text-sm hover:text-white/60 transition-colors">
+          Всички отзиви в Google
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="bg-cream py-10 sm:py-16 gsap-section">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <p class="text-highlight font-medium mb-1 sm:mb-2 tracking-wide uppercase text-xs sm:text-sm text-center gsap-fade-up">Въпроси и отговори</p>
+      <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 sm:mb-12 gsap-fade-up">Често задавани въпроси</h2>
+      <!-- PLACEHOLDER: replace with real FAQ content, add FAQPage schema to BaseLayout or here -->
+      <div class="space-y-2.5 sm:space-y-4 gsap-fade-up">
+        {[
+          { q: 'Каква гаранция имат машините?', a: '12 месеца гаранция на всяка продадена машина. Гаранцията покрива технически дефекти и се обслужва в нашия сервиз в София.' },
+          { q: 'Как се извършва доставката?', a: 'Изпращаме с куриер в цялата страна. Може и да вземете лично от магазина ни на ул. Сливен 23, ж.к. Банишора, Магазин 3, София.' },
+          { q: 'Правите ли сервиз на машини, закупени от другаде?', a: 'Да, обслужваме кафе машини независимо откъде са закупени. Свържете се с нас за консултация.' },
+          { q: 'Каква е разликата между нова и втора употреба машина?', a: 'Нашите машини са обслужени, почистени и тествани. При нас получавате качеството на марка машина на много по-достъпна цена и с реална гаранция.' },
+          { q: 'Мога ли да изпробвам машината преди покупка?', a: 'Да, заповядайте в магазина ни на ул. Сливен 23, ж.к. Банишора, София. Можете да видите машините на живо и да получите консултация от нашия екип.' },
+        ].map(faq => (
+          <details class="bg-white rounded-xl sm:rounded-2xl px-4 py-3.5 sm:px-6 sm:py-5 shadow-sm group">
+            <summary class="font-semibold text-sm sm:text-base cursor-pointer list-none flex justify-between items-center gap-3 sm:gap-4">
+              {faq.q}
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-highlight transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <p class="mt-2 sm:mt-3 text-text/70 text-sm sm:text-base leading-relaxed">{faq.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section class="bg-primary py-8 gsap-section">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 gsap-fade-up">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+        <p class="text-white/70 text-sm">Имате въпрос или искате да поръчате?</p>
+        <div class="flex gap-3">
+          <a
+            href={`tel:${site.phone}`}
+            class="inline-flex items-center gap-2 font-semibold px-5 py-2.5 rounded-full text-sm bg-white text-primary hover:bg-white/90 transition-colors whitespace-nowrap"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 7V5z" />
+            </svg>
+            {site.phoneDisplay}
+          </a>
+          <a
+            href="/contact"
+            class="inline-flex items-center gap-2 font-semibold px-5 py-2.5 rounded-full text-sm text-white/80 border border-white/20 hover:bg-white/10 transition-colors whitespace-nowrap"
+          >
+            Контакти
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    /* Hero — contained card layout */
+    .hero-card-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .hero-card-container {
+        flex-direction: row;
+        align-items: center;
+        gap: 3rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .hero-card-container {
+        gap: 4rem;
+      }
+    }
+
+    .hero-text-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    @media (min-width: 768px) {
+      .hero-text-side {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    .hero-image-side {
+      border-radius: 1.25rem;
+      overflow: hidden;
+      height: 340px;
+    }
+
+    @media (min-width: 480px) {
+      .hero-image-side {
+        height: 400px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .hero-image-side {
+        flex: 1;
+        height: auto;
+        min-height: 360px;
+        border-radius: 1.5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .hero-image-side {
+        min-height: 420px;
+      }
+    }
+
+    /* Service cards */
+    .svc-card {
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: default;
+      box-sizing: border-box;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    @media (min-width: 640px) {
+      .svc-card {
+        border-radius: 22px;
+        padding: 28px;
+        gap: 20px;
+      }
+    }
+    .svc-card:hover {
+      transform: translateY(-6px) scale(1.01);
+    }
+    .svc-card-green {
+      background: linear-gradient(145deg, #ffffff 0%, #f5faf9 55%, #edf5f3 100%);
+      box-shadow:
+        0 10px 40px rgba(40, 77, 71, 0.12),
+        0 4px 12px rgba(0, 0, 0, 0.07),
+        inset 0 2px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 3px rgba(0, 0, 0, 0.02);
+    }
+    .svc-card-green:hover {
+      box-shadow:
+        0 24px 56px rgba(40, 77, 71, 0.18),
+        0 8px 20px rgba(0, 0, 0, 0.10),
+        inset 0 2px 0 rgba(255, 255, 255, 0.95);
+    }
+    .svc-card-warm {
+      background: linear-gradient(145deg, #ffffff 0%, #faf7f2 55%, #f3ede3 100%);
+      box-shadow:
+        0 10px 40px rgba(107, 91, 69, 0.12),
+        0 4px 12px rgba(0, 0, 0, 0.07),
+        inset 0 2px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 3px rgba(0, 0, 0, 0.02);
+    }
+    .svc-card-warm:hover {
+      box-shadow:
+        0 24px 56px rgba(107, 91, 69, 0.18),
+        0 8px 20px rgba(0, 0, 0, 0.10),
+        inset 0 2px 0 rgba(255, 255, 255, 0.95);
+    }
+    .svc-content {
+      flex: 1;
+    }
+    .svc-icon-badge {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (min-width: 640px) {
+      .svc-icon-badge {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+      }
+    }
+    .svc-icon-badge-green {
+      background: linear-gradient(135deg, #356b63 0%, #284d47 100%);
+      box-shadow: 0 6px 18px rgba(40, 77, 71, 0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .svc-icon-badge-warm {
+      background: linear-gradient(135deg, #8B7355 0%, #6B5B45 100%);
+      box-shadow: 0 6px 18px rgba(107, 91, 69, 0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .service-btn-green {
+      background: linear-gradient(180deg, #356b63 0%, #284d47 60%, #1f3d38 100%);
+      box-shadow:
+        0 3px 10px rgba(40, 77, 71, 0.4),
+        0 1px 3px rgba(40, 77, 71, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    }
+    .service-btn-green:hover {
+      background: linear-gradient(180deg, #6db5ab 0%, #589e94 60%, #457e76 100%);
+      box-shadow:
+        0 5px 14px rgba(88, 158, 148, 0.45),
+        0 2px 5px rgba(88, 158, 148, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+    .service-btn-warm {
+      background: linear-gradient(180deg, #356b63 0%, #284d47 60%, #1f3d38 100%);
+      box-shadow:
+        0 3px 10px rgba(40, 77, 71, 0.4),
+        0 1px 3px rgba(40, 77, 71, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    }
+    .service-btn-warm:hover {
+      background: linear-gradient(180deg, #6db5ab 0%, #589e94 60%, #457e76 100%);
+      box-shadow:
+        0 5px 14px rgba(88, 158, 148, 0.45),
+        0 2px 5px rgba(88, 158, 148, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    /* Service card CTAs — 3D pill style */
+    .svc-cta-green {
+      color: #284d47;
+      background: linear-gradient(180deg, #edf4f2 0%, #dbe9e5 100%);
+      border: 1px solid rgba(40, 77, 71, 0.15);
+      box-shadow: 0 1px 3px rgba(40, 77, 71, 0.1);
+    }
+    .svc-cta-green:hover {
+      background: linear-gradient(180deg, #f2f7f6 0%, #e2ece9 100%);
+      transform: translateY(-1px);
+    }
+    .svc-cta-warm {
+      color: #6B5B45;
+      background: linear-gradient(180deg, #f5f0e7 0%, #ebe3d5 100%);
+      border: 1px solid rgba(107, 91, 69, 0.15);
+      box-shadow: 0 1px 3px rgba(107, 91, 69, 0.1);
+    }
+    .svc-cta-warm:hover {
+      background: linear-gradient(180deg, #f9f5ee 0%, #f0e9dc 100%);
+      transform: translateY(-1px);
+    }
+
+    /* Brand pill bar */
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 22px;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #284d47;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand-pill.nav-pill-active {
+      background: linear-gradient(180deg, #356b63 0%, #284d47 60%, #1f3d38 100%);
+      color: white;
+    }
+    .brand-pill.nav-pill-hover:hover {
+      background: linear-gradient(180deg, #6db5ab 0%, #589e94 60%, #457e76 100%);
+      color: white;
+    }
+
+    /* Scrollable pill bar on mobile */
+    .pill-scroll-wrapper {
+      scrollbar-width: none;
+    }
+    .pill-scroll-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (max-width: 639px) {
+      .brand-pill {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+      }
+    }
+    @media (max-width: 374px) {
+      .brand-pill {
+        padding: 6px 7px;
+        font-size: 0.72rem;
+      }
+    }
+
+  </style>
+
+  <!-- Brand pill switching -->
+  <script define:vars={{ brandProductsMap, brandTabs }}>
+    const grid = document.getElementById('brand-products');
+    const pills = document.querySelectorAll('.brand-pill[data-brand]');
+
+    const EUR_TO_BGN = 1.95583;
+    function formatPriceRow(price, priceEur, inStock) {
+      const availBadge = inStock
+        ? `<span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:9999px;background:#dcfce7;color:#15803d;white-space:nowrap">Налична</span>`
+        : `<span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:9999px;background:#fee2e2;color:#dc2626;white-space:nowrap">Неналична</span>`;
+      const priceHtml = priceEur
+        ? `<p class="text-xs sm:text-sm text-text"><span class="font-bold">€${priceEur.toFixed(2)}</span> <span class="text-muted font-normal">/ ${(Math.round(priceEur * EUR_TO_BGN * 100) / 100).toFixed(2)} лв.</span></p>`
+        : `<p class="text-[10px] sm:text-sm text-muted italic">По запитване</p>`;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">${priceHtml}${availBadge}</div>`;
+    }
+
+    function stripBrand(name, brand) {
+      return name.replace(new RegExp('^' + brand + '\\s*', 'i'), '');
+    }
+
+    function renderProducts(brandSlug) {
+      const items = brandProductsMap[brandSlug] ?? [];
+      if (!grid) return;
+      grid.innerHTML = items.map((p, i) => {
+        const img = p.images.find(x => x.isMain) || p.images[0];
+        const imgHtml = img
+          ? `<img src="${img.src}" alt="${img.alt || p.name + ' кафе машина'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />`
+          : `<div class="w-full h-full flex items-center justify-center" style="color:rgba(255,255,255,0.3)"><svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>`;
+        return `<a href="/produkt/${p.slug}" class="group flex flex-col bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-black/5 hover:-translate-y-1">
+          <div class="relative aspect-square overflow-hidden rounded-2xl sm:rounded-3xl m-0.5 sm:m-1" style="background:linear-gradient(135deg,#2a2a2a,#4a5568)">${imgHtml}</div>
+          <div class="flex flex-col flex-1 px-2 pt-1.5 pb-2 sm:px-4 sm:pt-3 sm:pb-4">
+            <h3 class="font-semibold text-xs sm:text-base text-text line-clamp-2 leading-tight mb-0 sm:mb-0.5">${stripBrand(p.name, p.brandDisplayName)}</h3>
+            <p class="text-[10px] sm:text-sm text-muted mb-1.5 sm:mb-2">${p.brandDisplayName}</p>
+            <div style="margin-top:auto">
+              ${formatPriceRow(p.price, p.priceEur, p.inStock)}
+              <span class="block bg-primary text-white text-[10px] sm:text-xs font-semibold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-center" onmouseover="this.style.background='#589e94'" onmouseout="this.style.background='#284d47'">Разгледай</span>
+            </div>
+          </div>
+        </a>`;
+      }).join('');
+    }
+
+    const cta = document.getElementById('brand-cta');
+    const ctaText = document.getElementById('brand-cta-text');
+
+    function updateCta(brandSlug) {
+      const tab = brandTabs.find(t => t.slug === brandSlug);
+      if (!cta || !ctaText || !tab) return;
+      cta.href = `/kafe-mashini/${brandSlug}`;
+      ctaText.textContent = `Всички машини ${tab.label}`;
+    }
+
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const brand = pill.getAttribute('data-brand');
+        pills.forEach(p => {
+          p.classList.remove('nav-pill-active');
+          p.classList.add('nav-pill-hover');
+        });
+        pill.classList.add('nav-pill-active');
+        pill.classList.remove('nav-pill-hover');
+        renderProducts(brand);
+        updateCta(brand);
+      });
+    });
+  </script>
+
+  <!-- Scroll animations via IntersectionObserver -->
+  <script>
+    const fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          fadeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          sectionObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+
+    document.querySelectorAll('.gsap-fade-up').forEach(el => fadeObserver.observe(el));
+    document.querySelectorAll('.gsap-section').forEach(el => sectionObserver.observe(el));
+  </script>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": site.name,
+    "url": site.url,
+  })} />
+</BaseLayout>

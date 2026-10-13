@@ -1,0 +1,20 @@
+---
+const stats = [
+  { value: '18+', label: 'години опит' },
+  { value: '12 мес.', label: 'гаранция' },
+  { value: '100%', label: 'нови части' },
+];
+---
+
+<section class="bg-primary py-10 mt-12 -mx-4 sm:-mx-6 px-4 sm:px-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="grid grid-cols-3 gap-6 text-center text-white">
+      {stats.map(stat => (
+        <div>
+          <p class="text-3xl md:text-4xl font-bold">{stat.value}</p>
+          <p class="text-xs sm:text-sm text-white/60 mt-1">{stat.label}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,81 @@
+---
+// Cookie consent banner (cosmetic) + GA4 (loads unconditionally)
+---
+
+<!-- GA4 — always loads regardless of consent banner -->
+<script is:inline src="https://www.googletagmanager.com/gtag/js?id=G-CY3K84H344" async></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CY3K84H344');
+
+  // Contact-conversion tracking. One delegated listener catches every phone/
+  // Viber/WhatsApp click site-wide (Header, Footer, product CTA, service page,
+  // blog CTA) with no per-component wiring. Mark `contact_click` as a KEY EVENT
+  // in the GA4 UI to attribute leads to pages/queries.
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    var method = null;
+    if (href.indexOf('tel:') === 0) method = 'phone';
+    else if (href.indexOf('viber:') === 0) method = 'viber';
+    else if (href.indexOf('wa.me') !== -1 || href.indexOf('whatsapp') !== -1) method = 'whatsapp';
+    if (method) {
+      gtag('event', 'contact_click', {
+        contact_method: method,
+        page_path: location.pathname
+      });
+    }
+  }, true);
+</script>
+
+<!-- Cookie banner — dismissible, does not gate GA -->
+<div
+  id="cookie-banner"
+  role="dialog"
+  aria-label="Съгласие за бисквитки"
+  class="fixed bottom-0 left-0 right-0 z-50 bg-primary text-white px-4 py-4 shadow-lg hidden"
+>
+  <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6">
+    <p class="text-sm leading-snug flex-1">
+      Използваме бисквитки на Google Analytics, за да анализираме трафика и да подобряваме сайта.
+      <a href="/biskvitki" class="underline hover:text-btn-light whitespace-nowrap">Научете повече</a>
+    </p>
+    <div class="flex gap-2 shrink-0">
+      <button
+        id="cookie-accept"
+        class="bg-btn hover:bg-btn-hover text-white text-sm font-medium px-4 py-2 rounded transition-colors"
+      >
+        Приемам
+      </button>
+      <button
+        id="cookie-reject"
+        class="border border-white/50 hover:border-white text-white text-sm font-medium px-4 py-2 rounded transition-colors"
+      >
+        Отказвам
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CONSENT_KEY = 'cookie_consent';
+  const banner = document.getElementById('cookie-banner');
+  const consent = localStorage.getItem(CONSENT_KEY);
+
+  if (consent === null) {
+    banner?.classList.remove('hidden');
+  }
+
+  document.getElementById('cookie-accept')?.addEventListener('click', () => {
+    localStorage.setItem(CONSENT_KEY, 'accepted');
+    banner?.classList.add('hidden');
+  });
+
+  document.getElementById('cookie-reject')?.addEventListener('click', () => {
+    localStorage.setItem(CONSENT_KEY, 'rejected');
+    banner?.classList.add('hidden');
+  });
+</script>

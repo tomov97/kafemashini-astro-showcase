@@ -1,0 +1,109 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SEOHead from '../components/SEOHead.astro';
+import CookieBanner from '../components/CookieBanner.astro';
+import { site } from '../utils/products';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: string;
+  noindex?: boolean;
+  hideHeader?: boolean;
+  bodyClass?: string;
+}
+
+const { ogImage = '/images/logo.png', ...restProps } = Astro.props;
+const props = { ogImage, ...restProps };
+const { hideHeader = false, bodyClass } = Astro.props;
+
+// Stable entity id so every LocalBusiness reference across the site (here + the
+// service page) resolves to ONE business in Google's eyes.
+const BUSINESS_ID = `${site.url}/#business`;
+
+// Global LocalBusiness (Store) schema. Optional local signals (geo, GBP sameAs,
+// map) are only emitted when the owner has filled them in data/site.json — an
+// empty sameAs/geo is worse than none.
+const localBusiness: Record<string, unknown> = {
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "@id": BUSINESS_ID,
+  "name": site.businessName,
+  "url": site.url,
+  "telephone": site.phone,
+  "email": site.email,
+  "image": `${site.url}${ogImage}`,
+  "priceRange": site.priceRange || "€€",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": `${site.address.street}, ${site.address.detail}`,
+    "addressLocality": site.address.city,
+    "addressRegion": site.address.district,
+    "addressCountry": "BG"
+  },
+  "openingHoursSpecification": [{
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    "opens": "10:00",
+    "closes": "17:00"
+  }]
+};
+if (site.geo?.lat && site.geo?.lng) {
+  localBusiness.geo = { "@type": "GeoCoordinates", "latitude": site.geo.lat, "longitude": site.geo.lng };
+}
+const sameAs = [site.gbpUrl].filter(Boolean);
+if (sameAs.length) localBusiness.sameAs = sameAs;
+if (site.mapsUrl) localBusiness.hasMap = site.mapsUrl;
+---
+
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/webp" href="/favicon.webp" />
+  <link rel="apple-touch-icon" href="/favicon.webp" />
+  <link rel="preload" href="/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/inter-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <SEOHead {...props} />
+
+  <!-- LocalBusiness (Store) Schema — the canonical business entity, id-linked site-wide -->
+  <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+</head>
+<body class:list={["min-h-screen flex flex-col bg-surface text-text", bodyClass]}>
+  {!hideHeader && <Header />}
+  <main class="flex-1">
+    <slot />
+  </main>
+  <Footer />
+  <CookieBanner />
+
+  <button
+    id="scroll-top"
+    aria-label="Към началото"
+    class="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-primary text-white shadow-md flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 hover:bg-btn"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+    </svg>
+  </button>
+
+  <script>
+    const btn = document.getElementById('scroll-top');
+    if (btn) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+          btn.classList.remove('opacity-0', 'pointer-events-none');
+        } else {
+          btn.classList.add('opacity-0', 'pointer-events-none');
+        }
+      }, { passive: true });
+      btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    }
+  </script>
+</body>
+</html>

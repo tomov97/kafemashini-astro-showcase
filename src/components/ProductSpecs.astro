@@ -1,0 +1,75 @@
+---
+import { site } from '../utils/products';
+import ViberIcon from './ViberIcon.astro';
+
+interface Props {
+  specs: Record<string, string>;
+}
+
+const { specs } = Astro.props;
+const entries = Object.entries(specs);
+
+// Keys to always exclude from the table
+const excludedKeys = ['Тип мелачка', 'Степени на смилане', 'Дисплей'];
+
+// Preferred display order — Контейнер за отпадъци included in main
+const orderedKeys = [
+  'Мощност', 'Налягане', 'Воден резервоар', 'Контейнер за кафе',
+  'Контейнер за отпадъци', 'Размери (ШxДxВ)', 'Размери', 'Тегло',
+  'Работа с мляно кафе', 'Двойно кафе', 'Макс. височина на чашата',
+  'Брой програми за напитки',
+];
+
+const filtered = entries.filter(([key]) =>
+  !excludedKeys.some(ex => key.startsWith(ex))
+);
+
+// Sort by preferred order, then append any remaining keys not in the list
+const ordered = [
+  ...orderedKeys.flatMap(ok => filtered.filter(([k]) => k.startsWith(ok))),
+  ...filtered.filter(([k]) => !orderedKeys.some(ok => k.startsWith(ok))),
+];
+
+// Deduplicate (in case a key matched multiple orderedKeys prefixes)
+const seen = new Set<string>();
+const displayEntries = ordered.filter(([k]) => {
+  if (seen.has(k)) return false;
+  seen.add(k);
+  return true;
+}).slice(0, 10);
+---
+
+<section class="mt-10">
+  <h2 class="text-xl font-bold mb-4">Технически характеристики</h2>
+  {entries.length > 0 ? (
+    <div class="rounded-xl overflow-hidden border border-border bg-white shadow-sm">
+      <table class="w-full text-sm">
+        <tbody>
+          {displayEntries.map(([key, value], i) => (
+            <tr class={i < displayEntries.length - 1 ? 'border-b border-border/50' : ''}>
+              <td class="px-4 py-3 font-medium text-primary w-2/5">{key}</td>
+              <td class="px-4 py-3 text-text/80">{value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ) : (
+    <div class="bg-white rounded-xl p-6 text-center border border-border/50">
+      <p class="text-text/60 text-sm mb-2">Подробни спецификации за този модел ще бъдат добавени скоро.</p>
+      <div class="flex items-center justify-center gap-3 flex-wrap">
+        <a href={`tel:${site.phone}`} class="text-sm text-highlight hover:underline inline-flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+          </svg>
+          {site.phoneDisplay}
+        </a>
+        <span class="text-text/30">|</span>
+        <a href={site.viber} class="text-sm text-[#7360F2] hover:underline inline-flex items-center gap-1.5">
+          <ViberIcon class="h-4 w-4" />
+          Viber
+        </a>
+      </div>
+    </div>
+  )}
+</section>

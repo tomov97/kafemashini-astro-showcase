@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kafemashini.ch/sitemap-index.xml

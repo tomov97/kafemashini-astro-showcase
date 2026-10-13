@@ -1,0 +1,33 @@
+---
+interface Props {
+  description: string;
+  productName: string;
+  brandName: string;
+}
+
+const { description, productName, brandName } = Astro.props;
+
+const THIN_THRESHOLD = 100;
+const trivialPatterns = ['Гаранция 12 месеца.', 'Инструкция за употреба'];
+
+// Check if description is essentially just warranty/manual boilerplate
+const cleanDesc = description.trim();
+const isThin = !cleanDesc || cleanDesc.length < THIN_THRESHOLD ||
+  trivialPatterns.every(p => cleanDesc.includes(p)) && cleanDesc.length < 80;
+
+const fallbackDesc = `${productName} е автоматична кафе машина от ${brandName}. Машината е внесена от Швейцария, преминала е пълна профилактика с нови части и идва с 12 месеца гаранция.`;
+
+const displayDesc = isThin ? fallbackDesc : cleanDesc;
+
+// Split description into paragraphs on double newlines, preserve single newlines as <br>
+const paragraphs = displayDesc.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+---
+
+<section class="mt-10">
+  <h2 class="text-xl font-bold mb-4">Описание</h2>
+  <div class="prose prose-sm max-w-none text-text/80">
+    {paragraphs.map(para => (
+      <p set:html={para.replace(/\n/g, '<br>')} />
+    ))}
+  </div>
+</section>

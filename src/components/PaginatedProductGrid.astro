@@ -1,0 +1,244 @@
+---
+import type { Product } from '../utils/products';
+import { eurToBgn } from '../utils/currency';
+
+interface Props {
+  products: Product[];
+  perPage?: number;
+}
+
+const { products, perPage = 6 } = Astro.props;
+const sortedProducts = [...products].sort((a, b) => (b.inStock ? 1 : 0) - (a.inStock ? 1 : 0));
+const totalPages = Math.ceil(sortedProducts.length / perPage);
+const needsPagination = totalPages > 1;
+---
+
+<div id="product-container">
+  <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6" id="product-grid">
+    {sortedProducts.map((product, i) => {
+      const img = product.images.find(img => img.isMain) || product.images[0];
+      return (
+        <div class="product-item" data-index={i} style={i >= perPage ? 'display:none' : ''}>
+          <a
+            href={`/produkt/${product.slug}`}
+            class="group flex flex-col bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-black/5 hover:-translate-y-1"
+          >
+            <div class="relative aspect-square overflow-hidden rounded-2xl sm:rounded-3xl m-0.5 sm:m-1 bg-gradient-to-br from-[#2a2a2a] to-[#4a5568]">
+              {img ? (
+                <img
+                  src={img.src}
+                  alt={img.alt || `${product.name} кафе машина`}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div class="w-full h-full flex items-center justify-center text-white/30">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              )}
+            </div>
+            <div class="flex flex-col flex-1 px-2 pt-1.5 pb-2 sm:px-4 sm:pt-3 sm:pb-4">
+              <h3 class="font-semibold text-xs sm:text-base text-text group-hover:text-primary transition-colors line-clamp-2 leading-tight mb-0 sm:mb-0.5">{product.name.replace(new RegExp('^' + product.brandDisplayName + '\\s*', 'i'), '')}</h3>
+              <p class="text-[10px] sm:text-sm text-muted mb-1.5 sm:mb-2">{product.brandDisplayName}</p>
+              <div class="mt-auto">
+                <div class="flex items-center justify-between mb-1.5 sm:mb-2">
+                  {product.price ? (
+                    <p class="text-xs sm:text-sm text-text">{product.priceEur ? <><span class="font-bold">{product.priceEur.toFixed(0)} €</span> <span class="text-muted font-normal">/ {eurToBgn(product.priceEur).toFixed(0)} лв.</span></> : <span class="font-bold">По запитване</span>}</p>
+                  ) : (
+                    <p class="text-[10px] sm:text-sm text-muted italic">По запитване</p>
+                  )}
+                  <span class={`text-[9px] sm:text-xs font-semibold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full ${product.inStock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                    {product.inStock ? 'Налична' : 'Неналична'}
+                  </span>
+                </div>
+                <span class="block bg-primary text-white text-[10px] sm:text-xs font-semibold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full group-hover:bg-btn transition-colors duration-200 text-center">Разгледай</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      );
+    })}
+  </div>
+
+  {needsPagination && (
+    <nav class="flex items-center justify-center gap-1.5 mt-8" id="pagination" aria-label="Пагинация">
+      <button id="prev-btn" class="pg-arrow" disabled aria-label="Предишна страница">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <div id="page-numbers" class="pg-numbers"></div>
+      <button id="next-btn" class="pg-arrow" aria-label="Следваща страница">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </nav>
+  )}
+</div>
+
+<style is:global>
+  .pg-arrow,
+  .pg-num,
+  .pg-dots {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    flex-shrink: 0;
+  }
+
+  .pg-arrow {
+    color: #374151;
+    background: #e5e7eb;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .pg-arrow:hover:not(:disabled) {
+    background: #d1d5db;
+  }
+
+  .pg-arrow:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .pg-numbers {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .pg-num {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    background: #e5e7eb;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .pg-num:hover:not(.active) {
+    background: #d1d5db;
+  }
+
+  .pg-num.active {
+    color: white;
+    background: #589e94;
+    font-weight: 600;
+  }
+
+  .pg-dots {
+    font-size: 0.875rem;
+    color: #6b7280;
+    background: #e5e7eb;
+    cursor: default;
+  }
+</style>
+
+{needsPagination && (
+  <script define:vars={{ totalPages, perPage }}>
+    let currentPage = 1;
+
+    const items = document.querySelectorAll('.product-item');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const pageNumbers = document.getElementById('page-numbers');
+    const container = document.getElementById('product-container');
+
+    function showPage(page, pushState = true) {
+      currentPage = page;
+      const start = (page - 1) * perPage;
+      const end = start + perPage;
+
+      items.forEach((item, i) => {
+        item.style.display = i >= start && i < end ? '' : 'none';
+      });
+
+      prevBtn.disabled = page === 1;
+      nextBtn.disabled = page === totalPages;
+
+      renderPageNumbers();
+
+      if (pushState) {
+        const url = new URL(window.location.href);
+        if (page === 1) {
+          url.searchParams.delete('page');
+        } else {
+          url.searchParams.set('page', page);
+        }
+        history.pushState({ page }, '', url);
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // Always returns exactly 7 slots, all non-null.
+    // ≤7 pages: show all (padded with extra numbers if <7 — but products/6=~9 pages so rare).
+    // >7 pages: always [1, s2, s3, s4, s5, s6, last] where gaps become '…'.
+    // Near start: 1 2 3 4 5 … last  (no left ellipsis needed)
+    // Near end:   1 … n-4 n-3 n-2 n-1 last
+    // Middle:     1 … a b c … last
+    function getPageRange(current, total) {
+      if (total <= 7) {
+        return Array.from({ length: total }, (_, i) => i + 1);
+      }
+
+      // Clamp the 3-wide window so slots 2-6 are always 5 distinct inner values
+      // slot2 through slot6, always exactly 5 values between 1 and last (exclusive)
+      let mid = Math.max(3, Math.min(current, total - 2));
+      let s2, s3, s4, s5, s6;
+
+      if (mid <= 4) {
+        // Near start: 1 [2 3 4 5] … last — no left ellipsis
+        [s2, s3, s4, s5, s6] = [2, 3, 4, 5, '…'];
+      } else if (mid >= total - 3) {
+        // Near end: 1 … [n-4 n-3 n-2 n-1] last — no right ellipsis
+        [s2, s3, s4, s5, s6] = ['…', total - 4, total - 3, total - 2, total - 1];
+      } else {
+        // Middle: 1 … [mid-1 mid mid+1] … last
+        [s2, s3, s4, s5, s6] = ['…', mid - 1, mid, mid + 1, '…'];
+      }
+
+      return [1, s2, s3, s4, s5, s6, total];
+    }
+
+    function renderPageNumbers() {
+      pageNumbers.innerHTML = '';
+      for (const item of getPageRange(currentPage, totalPages)) {
+        if (item === '…') {
+          const dots = document.createElement('span');
+          dots.textContent = '…';
+          dots.className = 'pg-dots';
+          pageNumbers.appendChild(dots);
+        } else {
+          const btn = document.createElement('button');
+          btn.textContent = item;
+          btn.className = 'pg-num' + (item === currentPage ? ' active' : '');
+          btn.addEventListener('click', () => showPage(item));
+          pageNumbers.appendChild(btn);
+        }
+      }
+    }
+
+    prevBtn.addEventListener('click', () => { if (currentPage > 1) showPage(currentPage - 1); });
+    nextBtn.addEventListener('click', () => { if (currentPage < totalPages) showPage(currentPage + 1); });
+
+    const urlPage = parseInt(new URL(window.location.href).searchParams.get('page') || '1', 10);
+    const initialPage = urlPage >= 1 && urlPage <= totalPages ? urlPage : 1;
+    showPage(initialPage, false);
+
+    window.addEventListener('popstate', (e) => {
+      const page = e.state?.page || parseInt(new URL(window.location.href).searchParams.get('page') || '1', 10);
+      showPage(page, false);
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  </script>
+)}

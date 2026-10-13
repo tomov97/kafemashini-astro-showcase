@@ -1,0 +1,10 @@
+{
+  // Static-assets deploy for the Astro static build (output: "static").
+  // Presence of this file stops `wrangler deploy` from entering interactive
+  // setup / trying to add the @astrojs/cloudflare SSR adapter (not needed).
+  "name": "kafemashini-astro",
+  "compatibility_date": "2026-06-30",
+  "assets": {
+    "directory": "dist"
+  }
+}

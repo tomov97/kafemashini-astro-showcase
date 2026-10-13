@@ -1,0 +1,25 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+
+interface Props {
+  title: string;
+  pageTitle: string;
+  description?: string;
+  canonical?: string;
+  bodyClass?: string;
+  noindex?: boolean;
+}
+
+const { title, pageTitle, description, canonical, bodyClass, noindex } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} bodyClass={bodyClass} noindex={noindex}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumbs items={[{ label: 'Начало', href: '/' }, { label: pageTitle }]} />
+    <h1 class="text-3xl md:text-4xl font-bold mb-8">{pageTitle}</h1>
+    <div class="prose prose-lg max-w-none">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,22 @@
+---
+---
+
+<div class="bg-white rounded-xl p-5 mt-6 shadow-sm border border-border/50">
+  <p class="text-xs font-medium uppercase tracking-widest text-muted mb-3">Какво получавате</p>
+  <ul class="space-y-2.5">
+    {[
+      'Гарантиран произход от Швейцария',
+      'Напълно обслужена кафе машина',
+      'Пълна профилактика с нови части',
+      '12 месеца гаранция',
+      'Доставка в цялата страна',
+    ].map(item => (
+      <li class="flex items-start gap-2.5 text-sm text-text/80">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-primary" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+        <span>{item}</span>
+      </li>
+    ))}
+  </ul>
+</div>

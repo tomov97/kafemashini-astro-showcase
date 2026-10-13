@@ -1,0 +1,64 @@
+{
+  "name": "Кафемашини",
+  "businessName": "Swiss Coffe",
+  "tagline": "Кафе машини – втора употреба от Швейцария",
+  "phone": "+359 894 807 755",
+  "phoneDisplay": "0894 807 755",
+  "email": "office@kafemashini.ch",
+  "viber": "viber://chat?number=%2B359894807755",
+  "whatsapp": "https://wa.me/359894807755",
+  "address": {
+    "city": "София",
+    "district": "ж.к. Банишора",
+    "street": "ул. Сливен 23",
+    "detail": "Магазин 3"
+  },
+  "hours": "Понеделник – Петък, 10:00 – 17:00",
+  "url": "https://kafemashini.ch",
+  "warranty": "12 месеца",
+  "copyright": "2018",
+  "priceRange": "€€",
+  "geo": {
+    "lat": "42.70872540093961",
+    "lng": "23.307714589264556"
+  },
+  "gbpUrl": "https://share.google/1vfAmXRCM7AvRThMT",
+  "mapsUrl": "https://maps.app.goo.gl/tE4BXFX7NPgdh4G6A",
+  "_localTodo": "OWNER: fill geo.lat/lng (from Google Maps listing), gbpUrl (the GBP listing URL) and mapsUrl (Google Maps short link). These feed LocalBusiness schema sameAs/hasMap/geo. Left blank = omitted from schema (safe).",
+  "navigation": [
+    {
+      "label": "Начало",
+      "href": "/"
+    },
+    {
+      "label": "Продукти",
+      "href": "/produkti"
+    },
+    {
+      "label": "Сервиз",
+      "href": "/serviz-na-kafe-mashini"
+    },
+    {
+      "label": "Контакти",
+      "href": "/contact"
+    },
+    {
+      "label": "Блог",
+      "href": "/blog"
+    }
+  ],
+  "legalLinks": [
+    {
+      "label": "Условия за ползване",
+      "href": "/uslovia"
+    },
+    {
+      "label": "Защита на личните данни",
+      "href": "/zashtita-na-lichnite-danni"
+    },
+    {
+      "label": "Бисквитки",
+      "href": "/biskvitki"
+    }
+  ]
+}

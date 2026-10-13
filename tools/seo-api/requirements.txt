@@ -1,0 +1,10 @@
+# Python deps for tools/seo-api/ — Google API access only.
+# Trimmed 2026-07-30 from the third-party claude-seo pack's requirements.txt,
+# which also listed playwright, weasyprint, Pillow, matplotlib, openpyxl,
+# lxml, validators and beautifulsoup4 — none used by the five scripts here.
+
+google-api-python-client>=2.100.0
+google-auth>=2.23.0
+google-auth-oauthlib>=1.1.0
+google-analytics-data>=0.18.0
+requests>=2.31.0

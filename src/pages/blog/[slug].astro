@@ -1,0 +1,175 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { site, getProductBySlug } from '../../utils/products';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const d = post.data;
+
+const siteUrl = site.url.replace(/\/$/, '');
+const canonical = `${siteUrl}/blog/${post.id}`;
+const heroImage = d.heroImage || '/images/logo.png';
+
+// Section legend, built from the article's own h2s (posts are h2-only).
+const sections = headings.filter((h) => h.depth === 2);
+
+// Down-links to products (procedural hubs). Resolve slugs to live products only.
+const linkedProducts = d.relatedProducts
+  .map((slug) => getProductBySlug(slug))
+  .filter((p) => p !== undefined);
+
+const pillarLabel: Record<string, string> = {
+  '/serviz-na-kafe-mashini': 'Сервиз на кафемашини',
+  '/kak-da-izberete-upotrebyavana-kafemashina': 'Как да изберете кафемашина',
+};
+
+// Article schema — author/publisher tied to the single business entity (@id).
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: d.title,
+  description: d.description,
+  datePublished: d.publishDate.toISOString(),
+  dateModified: (d.updatedDate || d.publishDate).toISOString(),
+  image: heroImage.startsWith('http') ? heroImage : `${siteUrl}${heroImage}`,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+  author: { '@id': `${siteUrl}/#business` },
+  publisher: { '@id': `${siteUrl}/#business` },
+};
+
+const faqSchema = d.faqs.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: d.faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    }
+  : null;
+---
+
+<BaseLayout title={d.title} description={d.description} canonical={canonical} ogImage={heroImage} ogType="article" bodyClass="!bg-cream">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumbs
+      items={[
+        { label: 'Начало', href: '/' },
+        { label: 'Блог', href: '/blog' },
+        { label: d.title },
+      ]}
+    />
+
+    <div class="lg:grid lg:grid-cols-[1fr_16rem] lg:gap-8 lg:items-start">
+      <article class="bg-white rounded-3xl shadow-sm border border-black/5 p-6 sm:p-8 min-w-0">
+        <h1 class="text-3xl md:text-4xl font-bold mb-4">{d.title}</h1>
+
+        <p class="text-sm text-muted mb-6">
+          Публикувано на {d.publishDate.toLocaleDateString('bg-BG', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </p>
+
+        {sections.length >= 3 && (
+          <details class="lg:hidden bg-card rounded-2xl border border-border px-5 py-4 mb-8">
+            <summary class="font-semibold cursor-pointer text-primary-dark">Съдържание</summary>
+            <ol class="mt-3 space-y-2">
+              {sections.map((s) => (
+                <li>
+                  <a href={`#${s.slug}`} class="text-sm text-muted hover:text-highlight transition-colors">{s.text}</a>
+                </li>
+              ))}
+            </ol>
+          </details>
+        )}
+
+        <!-- Direct-answer opener: served first for readers + AI-citation surfaces -->
+        <div class="bg-gray-50 border-l-4 border-highlight rounded-r px-5 py-4 mb-8 text-lg leading-relaxed">
+          {d.directAnswer}
+        </div>
+
+        <div class="prose prose-lg max-w-none">
+          <Content />
+        </div>
+
+        {d.pillar && (
+          <p class="mt-8 text-lg">
+            Нужен ви е ремонт или профилактика? Вижте нашия{' '}
+            <a href={d.pillar} class="text-highlight font-medium underline">{pillarLabel[d.pillar]}</a>.
+          </p>
+        )}
+
+        {linkedProducts.length > 0 && (
+          <section class="mt-10">
+            <h2 class="text-2xl font-bold mb-4">Машини, свързани с тази статия</h2>
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {linkedProducts.map((p) => (
+                <li>
+                  <a href={`/produkt/${p!.slug}`} class="text-highlight hover:underline">{p!.name}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {d.faqs.length > 0 && (
+          <section class="mt-12">
+            <h2 class="text-2xl font-bold mb-6">Често задавани въпроси</h2>
+            <div class="space-y-4">
+              {d.faqs.map((f) => (
+                <details class="border border-border rounded-lg px-5 py-4">
+                  <summary class="font-medium cursor-pointer">{f.q}</summary>
+                  <p class="mt-3 text-muted leading-relaxed">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- Soft CTA — contact clicks are tracked via the global GA4 listener -->
+        <section class="mt-12 bg-primary text-white rounded-xl px-6 py-8 text-center">
+          <h2 class="text-2xl font-bold mb-3">Имате въпрос за вашата кафемашина?</h2>
+          <p class="mb-6 text-white/80">Обадете се или ни пишете — над 18 години опит в сервиза на кафемашини в София.</p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <a href={`tel:${site.phone.replace(/\s/g, '')}`} class="bg-btn hover:bg-btn-hover text-white font-medium px-5 py-3 rounded-lg transition-colors">
+              {site.phoneDisplay}
+            </a>
+            <a href={site.viber} class="border border-white/40 hover:border-white text-white font-medium px-5 py-3 rounded-lg transition-colors">Viber</a>
+            <a href={site.whatsapp} class="border border-white/40 hover:border-white text-white font-medium px-5 py-3 rounded-lg transition-colors">WhatsApp</a>
+          </div>
+        </section>
+      </article>
+
+      {sections.length >= 3 && (
+        <aside class="hidden lg:block sticky top-24 self-start">
+          <div class="bg-white rounded-3xl border border-black/5 shadow-sm p-5">
+            <p class="font-semibold text-primary-dark mb-3">Съдържание</p>
+            <ol class="space-y-1">
+              {sections.map((s) => (
+                <li>
+                  <a
+                    href={`#${s.slug}`}
+                    class="block text-sm text-muted hover:text-highlight py-1 pl-3 border-l-2 border-transparent hover:border-highlight transition-colors"
+                  >
+                    {s.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </aside>
+      )}
+    </div>
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
+</BaseLayout>
+
+<!-- VideoObject schema slot reserved for future owner-produced repair videos.
+     When a post embeds a video, emit a VideoObject here referencing the same @id. -->

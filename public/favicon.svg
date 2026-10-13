@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="baseBevel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#148366"/>
+      <stop offset="30%" stop-color="#053c2d"/>
+      <stop offset="100%" stop-color="#01140f"/>
+    </linearGradient>
+    
+    <linearGradient id="creaseShadow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#02140f"/>
+      <stop offset="50%" stop-color="#073a2c"/>
+      <stop offset="100%" stop-color="#010d0a"/>
+    </linearGradient>
+
+    <!-- Top-Left Piece Gradient (Glossy Teal) -->
+    <radialGradient id="leftGrad" cx="40" cy="38" r="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4aeab8"/>
+      <stop offset="30%" stop-color="#1dbf91"/>
+      <stop offset="70%" stop-color="#148c6b"/>
+      <stop offset="100%" stop-color="#0c5a45"/>
+    </radialGradient>
+
+    <!-- Bottom-Right Piece Gradient -->
+    <linearGradient id="rightGrad" x1="30" y1="30" x2="108" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#14896a"/>
+      <stop offset="30%" stop-color="#24ba91"/>
+      <stop offset="70%" stop-color="#138565"/>
+      <stop offset="100%" stop-color="#084d3a"/>
+    </linearGradient>
+
+    <linearGradient id="rimGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#b2fdea" stop-opacity="0.8"/>
+      <stop offset="25%" stop-color="#4aeab8" stop-opacity="0.2"/>
+      <stop offset="70%" stop-color="#000000" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <radialGradient id="specular" cx="40" cy="38" r="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="40%" stop-color="#ccfced" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#7bf5cc" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="secHigh" cx="26" cy="74" r="16" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4aeab8" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#4aeab8" stop-opacity="0"/>
+    </radialGradient>
+
+    <clipPath id="beanClip">
+      <circle cx="64" cy="64" r="51"/>
+    </clipPath>
+  </defs>
+
+  <!-- Base Bevel (Outer shadow giving thickness to the bean) -->
+  <circle cx="64" cy="65" r="54" fill="url(#baseBevel)"/>
+  <circle cx="65" cy="66" r="52" fill="#01140f"/>
+
+  <!-- Inner Clipped Bean -->
+  <g clip-path="url(#beanClip)">
+    <!-- Crease background (deep gap) -->
+    <rect x="0" y="0" width="128" height="128" fill="url(#creaseShadow)"/>
+
+    <!-- Left Half Surface -->
+    <path d="M 100 24 L 100 -20 L -20 -20 L -20 120 L 15 90 C 65 90, 45 40, 100 24 Z" 
+          fill="url(#leftGrad)"/>
+
+    <!-- Right Half Surface -->
+    <path d="M 21 96 C 71 96, 51 46, 106 30 L 150 30 L 150 150 L 21 150 Z" 
+          fill="url(#rightGrad)"/>
+    
+    <!-- Crease highlights/shadows -->
+    <!-- Shadow along Left Half edge -->
+    <path d="M 15 90 C 65 90, 45 40, 100 24" 
+          fill="none" stroke="#043326" stroke-width="2.5" 
+          stroke-linecap="round" opacity="0.8"/>
+
+    <!-- Bright teal highlight along Right Half edge -->
+    <path d="M 21 96 C 71 96, 51 46, 106 30" 
+          fill="none" stroke="#60deb6" stroke-width="2.5" 
+          stroke-linecap="round" opacity="0.9"/>
+
+    <path d="M 21 96 C 71 96, 51 46, 106 30" 
+          fill="none" stroke="#ffffff" stroke-width="1" 
+          stroke-linecap="round" opacity="0.4"/>
+
+    <!-- Global Rim Light/Shadow Overlay -->
+    <circle cx="64" cy="64" r="51" fill="none" stroke="url(#rimGradient)" stroke-width="6"/>
+
+    <!-- Specular bright highlight on Top Left quadrant -->
+    <ellipse cx="40" cy="38" rx="16" ry="24" transform="rotate(-30 40 38)" fill="url(#specular)"/>
+    
+    <!-- Secondary soft highlight on bottom part of the left piece -->
+    <ellipse cx="26" cy="74" rx="8" ry="16" transform="rotate(-60 26 74)" fill="url(#secHigh)"/>
+  </g>
+</svg>

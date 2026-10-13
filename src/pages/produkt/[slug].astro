@@ -1,0 +1,181 @@
+﻿---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import PriceDisplay from '../../components/PriceDisplay.astro';
+import ProductSpecs from '../../components/ProductSpecs.astro';
+import ProductDescription from '../../components/ProductDescription.astro';
+import ProductHighlights from '../../components/ProductHighlights.astro';
+import ProductCTA from '../../components/ProductCTA.astro';
+import RelatedProducts from '../../components/RelatedProducts.astro';
+import BrandNav from '../../components/BrandNav.astro';
+import TrustStrip from '../../components/TrustStrip.astro';
+import ProductFAQ from '../../components/ProductFAQ.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { products, getProductBySlug, getRelatedProducts, getBrandBySlug, site } from '../../utils/products';
+import { getArticlesForProduct } from '../../utils/blog';
+import { formatEUR } from '../../utils/currency';
+
+export function getStaticPaths() {
+  return products.map(product => ({
+    params: { slug: product.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const product = getProductBySlug(slug!)!;
+const brand = getBrandBySlug(product.brand);
+const related = getRelatedProducts(product, 4);
+const mainImage = product.images.find(img => img.isMain) || product.images[0];
+const siteUrl = site.url;
+
+const breadcrumbs = [
+  { label: 'Начало', href: '/' },
+  ...(brand ? [{ label: brand.displayName, href: `/kafe-mashini/${brand.slug}` }] : []),
+  { label: product.name },
+];
+
+// Guides that name this product in their relatedProducts frontmatter — reciprocal
+// to the article's down-links, derived at build time so no per-product/brand map
+// needs maintaining as the blog grows.
+const guides = await getArticlesForProduct(product.slug);
+
+// Build additionalProperty array from specs for schema.org
+const specProperties = Object.entries(product.specs).map(([name, value]) => ({
+  '@type': 'PropertyValue',
+  name,
+  value,
+}));
+
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  image: mainImage ? `${siteUrl}${mainImage.src}` : undefined,
+  description: product.metaDescription || `${product.name} автоматична кафе машина втора употреба от Швейцария`,
+  sku: product.slug,
+  model: product.modelNumber || undefined,
+  category: 'Automatic Coffee Machine',
+  brand: {
+    '@type': 'Brand',
+    name: product.brandDisplayName,
+  },
+  offers: {
+    '@type': 'Offer',
+    url: `${siteUrl}/produkt/${product.slug}`,
+    priceCurrency: 'EUR',
+    price: product.priceEur ?? undefined,
+    availability: product.inStock
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock',
+    itemCondition: 'https://schema.org/RefurbishedCondition',
+    seller: {
+      '@type': 'Organization',
+      name: site.businessName,
+      url: siteUrl,
+    },
+  },
+  warranty: {
+    '@type': 'WarrantyPromise',
+    durationOfWarranty: {
+      '@type': 'QuantitativeValue',
+      value: 12,
+      unitCode: 'MON',
+    },
+    warrantyScope: 'https://schema.org/RepairWarranty',
+  },
+  ...(specProperties.length > 0 ? { additionalProperty: specProperties } : {}),
+};
+---
+
+<BaseLayout
+  title={product.metaTitle || `${product.name} – Кафе машина втора употреба | Кафемашини`}
+  description={product.metaDescription || `${product.name} автоматична кафе машина от ${product.brandDisplayName}. ${product.priceEur ? `Цена: ${formatEUR(product.priceEur)}` : ''} ${site.warranty} гаранция.`}
+  ogImage={mainImage?.src}
+  ogType="product"
+  bodyClass="!bg-cream"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div class="max-w-5xl mx-auto">
+    <Breadcrumbs items={breadcrumbs} />
+    <BrandNav currentBrand={product.brand} />
+
+    <div class="flex flex-col md:flex-row gap-8 mb-8">
+      <div class="md:w-1/2">
+        <div class="group relative aspect-square overflow-hidden rounded-3xl bg-gradient-to-br from-[#2a2a2a] to-[#4a5568] shadow-md">
+          {mainImage ? (
+            <img
+              src={mainImage.src}
+              alt={mainImage.alt || `${product.name} кафе машина`}
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              loading="eager"
+              decoding="async"
+            />
+          ) : (
+            <div class="w-full h-full flex items-center justify-center text-center" style="color:rgba(255,255,255,0.3)">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+          )}
+        </div>
+        <p class="text-xs text-muted mt-2 text-center">Илюстративна снимка. Възможни са козметични следи от употреба.</p>
+      </div>
+
+      <div class="md:w-1/2">
+        <h1 class="font-heading text-3xl md:text-4xl font-bold mb-1">{product.name}</h1>
+        {brand ? (
+          <a href={`/kafe-mashini/${brand.slug}`} class="text-muted hover:text-primary transition-colors text-sm">
+            {product.brandDisplayName}
+          </a>
+        ) : (
+          <p class="text-muted text-sm">{product.brandDisplayName}</p>
+        )}
+
+        <div class="mt-4 mb-5">
+          <PriceDisplay priceEur={product.priceEur} size="lg" />
+        </div>
+
+        <div class="mb-5">
+          <span class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${
+            product.inStock ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+          }`}>
+            <span class={`w-2 h-2 rounded-full ${product.inStock ? 'bg-green-500' : 'bg-red-500'}`}></span>
+            {product.inStock ? 'В наличност' : 'Изчерпано'}
+          </span>
+        </div>
+
+        <ProductHighlights specs={product.specs} milkSystem={product.milkSystem} />
+
+        <ProductCTA />
+      </div>
+    </div>
+
+    <ProductDescription
+      description={product.description}
+      productName={product.name}
+      brandName={product.brandDisplayName}
+    />
+
+    <ProductSpecs specs={product.specs} />
+
+    {guides.length > 0 && (
+      <section class="mt-8">
+        <h2 class="text-xl font-bold mb-4">Полезно за тази машина</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {guides.slice(0, 3).map((post) => <BlogCard post={post} />)}
+        </div>
+      </section>
+    )}
+    </div>
+
+    <RelatedProducts products={related} brandName={product.brandDisplayName} brandSlug={product.brand} />
+
+    <div class="max-w-5xl mx-auto">
+    <TrustStrip />
+    <ProductFAQ />
+    </div>
+  </div>
+
+
+  <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
+</BaseLayout>
