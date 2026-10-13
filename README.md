@@ -74,8 +74,15 @@ Every page ships valid JSON-LD, generated from data:
 
 ### Results
 
-- The first engine-produced article reached **490 impressions and 28 clicks at average position 4.6** within about six weeks of publishing, **5.6x more clicks than the site's main service page** it was written to support.
-- Around 78% of that article's impressions came from long-tail queries too rare for Search Console to even name. Optimizing for head keywords alone would never have found that traffic.
+Search Console data through 11 October 2026:
+
+| Article | Live since | Impressions | Clicks | Avg. position |
+|---|---|---|---|---|
+| DeLonghi Magnifica / Dinamica common problems | 3 Aug 2026 | 3,285 | 165 | 5.1 |
+| How to descale a Saeco | 15 Jul 2026 | 2,611 | 139 | 5.1 |
+
+- In the last 28 days the DeLonghi article was the **#2 page on the entire site by clicks**, behind only the homepage and ahead of every category and product page.
+- The two articles together brought in **35% of all the site's Google clicks** over the same 28 days.
 - The build ships with **zero broken internal links, zero redirect-hitting links, and zero orphan pages**, all checked automatically on every publish.
 
 ## Tech stack
